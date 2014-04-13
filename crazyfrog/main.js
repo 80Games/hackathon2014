@@ -1,6 +1,6 @@
 // We start by initializing Phaser
 // Parameters: width of the game, height of the game, how to render the game, the HTML div that will contain the game
-var game = new Phaser.Game(500, 600, Phaser.AUTO, 'game_div');
+var game = new Phaser.Game(1200, 600, Phaser.AUTO, 'game_div');
 var frog;
 var deadFrog;
 var cars;
@@ -25,14 +25,14 @@ var main_state = {
         game.load.image('frog', 'assets/frog3.png');
         game.load.image('deadfrog', 'assets/deadfrog.png');
         game.load.image('fly', 'assets/fly.png');
-        game.load.image('streets', 'assets/streets.png');
+        game.load.image('streets', 'assets/widestreets.png');
     },
 
     create: function () {
         game.physics.startSystem(Phaser.Physics.ARCADE);
         //game.physics.setBoundsToWorld();
 
-        s = game.add.tileSprite(0, 0, 500, 600, 'streets');
+        s = game.add.tileSprite(0, 0, 1200, 600, 'streets');
 
         var frogYPosition = 500;
         var frogXPosition = game.width / 2;
@@ -166,7 +166,7 @@ function updateCars() {
             if (maxCars > numberOfCars) {
                 numberOfCars++;
                 var velocity = 50 + Math.random() * 200;
-                var car_sprite = cars.create(Math.random() * 300, laneOffset + i * laneSize, 'car');
+                var car_sprite = cars.create(Math.random() * game.world.width, laneOffset + i * laneSize, 'car');
                 car_sprite.body.velocity.x = velocity;
                 car_sprite.checkWorldBounds = true;
                 car_sprite.enableBody = true;
