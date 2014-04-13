@@ -28,6 +28,7 @@ var main_state = {
         game.physics.enable(frog, Phaser.Physics.ARCADE);
         frog.body.checkCollision.any = true;
         frog.body.collideWorldBounds = true;
+        frog.body.setSize(30,30);
         frog.events.onOutOfBounds.add(frogOut, this);
 
         cars = game.add.group();
@@ -84,6 +85,11 @@ var main_state = {
     render: function () {
         game.debug.body(frog);
         game.debug.spriteInfo(frog);
+        var carsSize=cars.length;
+        for (var i=0;i<carsSize;i++) {
+            var c = cars.getAt(i);
+            game.debug.body(c);
+        }
     }
 }
 
@@ -93,7 +99,6 @@ function carOut(car) {
     car.reset(-60, y);
     car.body.velocity.x = 50 + Math.random() * 200;
 }
-
 function frogOut(lfrog) {
     lfrog.body.velocity.setTo(0, 0);
     lfrog.x = game.width / 2;
