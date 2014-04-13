@@ -7,6 +7,7 @@ var cars;
 var fly;
 var introText;
 var levelText;
+var lifesText;
 var isGameOver = false;
 
 var showDebugInfos = false;
@@ -69,9 +70,9 @@ var main_state = {
         levelText.visible = true;
 
         var lifeLevelText = 'Lifes: ' + lifes;
-        levelText = game.add.text(game.world.width/5*4, 20, lifeLevelText, { font: "18px Arial", fill: "#ffffff", align: "center" });
-        levelText.anchor.setTo(0.5, 0.5);
-        levelText.visible = true;
+        lifesText = game.add.text(game.world.width/5*4, 20, lifeLevelText, { font: "18px Arial", fill: "#ffffff", align: "center" });
+        lifesText.anchor.setTo(0.5, 0.5);
+        lifesText.visible = true;
     },
 
     update: function () {
@@ -133,6 +134,7 @@ function resetFrog(lfrog) {
     lfrog.angle = 0;
     deadFrog.visible=false;
     lfrog.visible=true;
+    lfrog.revive();
 }
 function frogOut(lfrog) {
     resetFrog(lfrog);
@@ -140,6 +142,14 @@ function frogOut(lfrog) {
 }
 
 function frogIsDead(frog, car) {
+    deadFrog.x=frog.x;
+    deadFrog.y=frog.y;
+    deadFrog.angle=frog.angle;
+    deadFrog.visible=true;
+
+    frog.visible=false;
+    frog.kill();
+
     lifes = lifes - 1;
     if (lifes < 1) {
         introText.text = 'Game Over!';
@@ -147,12 +157,8 @@ function frogIsDead(frog, car) {
         lifes = 3;
         currentLevel = 1;
     }
+    lifesText.text = 'Lives: '+lifes;
     isGameOver = true;
-    deadFrog.x=frog.x;
-    deadFrog.y=frog.y;
-    deadFrog.angle=frog.angle;
-    deadFrog.visible=true;
-    frog.visible=false;
 }
 
 function flyEaten(frog, fly) {
