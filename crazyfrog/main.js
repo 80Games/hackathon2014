@@ -4,6 +4,7 @@ var game = new Phaser.Game(500, 600, Phaser.AUTO, 'game_div');
 var frog;
 var cars;
 var introText;
+var isGameOver=false;
 
 // And now we define our first and only state, I'll call it 'main'. A state is a specific scene of a game like a menu, a game over screen, etc.
 var main_state = {
@@ -23,7 +24,10 @@ var main_state = {
         var frogXPosition = game.width / 2;
         frog = game.add.sprite(frogXPosition, frogYPosition, 'frog');
         frog.anchor.setTo(0.5, 0.5);
+        frog.checkWorldBounds = true;
         game.physics.enable(frog, Phaser.Physics.ARCADE);
+        frog.body.checkCollision.any=true;
+        frog.body.collideWorldBounds = true;
 
 
         cars = game.add.group();
@@ -38,6 +42,7 @@ var main_state = {
             car_sprite.physicsBodyType = Phaser.Physics.ARCADE;
             car_sprite.events.onOutOfBounds.add(carOut, this);
             game.physics.enable(car_sprite, Phaser.Physics.ARCADE);
+            car_sprite.body.checkCollision.any=true;
         }
 
         introText = game.add.text(game.world.centerX, 400, '- click to start -', { font: "40px Arial", fill: "#ffffff", align: "center" });
@@ -61,7 +66,23 @@ var main_state = {
             frog.x += 5;
             frog.angle = 90;
         }
-	}
+        if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
+            if (isGameOver) {
+                isGameOver=false;
+                introText.visible=false;
+
+                frog.x=game.width / 2;
+                frog.y=500;
+                frog.angle = 0;
+                frog.body.velocity.setTo(0,0);
+            }
+        }
+	},
+
+    render: function() {
+        game.debug.body(frog);
+        game.debug.spriteInfo(frog);
+    }
 }
 
 function carOut(car) {
@@ -74,6 +95,7 @@ function carOut(car) {
 function deadFrog(frog, car) {
     introText.text = 'Game Over!';
     introText.visible = true;
+    isGameOver=true;
 
 }
 
