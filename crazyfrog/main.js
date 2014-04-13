@@ -12,10 +12,12 @@ var isGameOver = false;
 
 var showDebugInfos = false;
 
-var currentLevel = 1;
+var currentLevel = 7;
 var lifes = 3;
 var laneSize = 65;
 var laneOffset = 120;
+
+var irrerIvanQuote=0.001;
 
 // And now we define our first and only state, I'll call it 'main'. A state is a specific scene of a game like a menu, a game over screen, etc.
 var main_state = {
@@ -77,7 +79,7 @@ var main_state = {
 
     update: function () {
 
-        game.physics.arcade.collide(cars);
+        game.physics.arcade.collide(cars, cars, swapSpeed, null, this);
         game.physics.arcade.overlap(frog, cars, frogIsDead, null, this);
         game.physics.arcade.overlap(frog, fly, flyEaten, null, this);
 
@@ -119,6 +121,13 @@ var main_state = {
             }
         }
     }
+}
+
+function swapSpeed(a, b) {
+    var bvel = b.body.velocity.x;
+    b.body.velocity.x = a.body.velocity.x;
+    a.body.velocity.x = bvel;
+    irrerIvanWithRandom(a,0.0);
 }
 
 function carOut(car) {
@@ -192,18 +201,60 @@ function updateCars() {
                 numberOfCars++;
                 var velocity = 50 + Math.random() * 200;
                 var car_sprite = cars.create(Math.random() * game.world.width, laneOffset + i * laneSize, 'car');
+                game.physics.enable(car_sprite, Phaser.Physics.ARCADE);
                 car_sprite.body.velocity.x = velocity;
                 car_sprite.checkWorldBounds = true;
                 car_sprite.enableBody = true;
                 car_sprite.physicsBodyType = Phaser.Physics.ARCADE;
                 car_sprite.events.onOutOfBounds.add(carOut, this);
-                game.physics.enable(car_sprite, Phaser.Physics.ARCADE);
                 car_sprite.body.checkCollision.any = true;
+                car_sprite.body.bounce.setTo(1,1);
                 //car_sprite.body.immovable = true;
                 car_sprite.body.setSize(76, 36, 0, 7);
+
+                game.time.events.loop(game.rnd.integerInRange(25, 100), irrerIvan, this, car_sprite);
             }
         }
     } while (numberOfCars<maxCars);
+}
+
+function irrerIvanWithRandom(c, random) {
+    var nextLaneOffset = laneSize;
+    var changeLaneStep = 1;
+    var delta = 0;
+    if ((typeof c.irrerIvan === "undefined") || (c.irrerIvan === 0)) {
+        c.irrerIvan = 0;
+        if (random < irrerIvanQuote) {
+            console.log("IrrerIvan: "+random);
+            c.irrerIvan = 0 > Math.random() - 0.5 ? -nextLaneOffset : nextLaneOffset;
+            if (c.y <= laneOffset) {
+                c.irrerIvan = nextLaneOffset;
+            }
+            if (c.y >= (laneOffset + (4 * laneSize))) {
+                c.irrerIvan = -nextLaneOffset;
+            }
+        } else {
+            console.log("No IrrerIvan");
+        }
+    }
+    if (c.irrerIvan > 0) {
+        c.irrerIvan -= changeLaneStep;
+        delta = +changeLaneStep;
+        if (c.irrerIvan < 0) c.irrerIvan = 0;
+    } else {
+        if (c.irrerIvan < 0) {
+            c.irrerIvan += changeLaneStep;
+            delta = -changeLaneStep;
+            if (c.irrerIvan > 0) c.irrerIvan = 0;
+        }
+    }
+
+    c.y += delta;
+}
+
+function irrerIvan(c) {
+    var cr=Math.random();
+    irrerIvanWithRandom(c, cr);
 }
 
 // And finally we tell Phaser to add and start our 'main' state
