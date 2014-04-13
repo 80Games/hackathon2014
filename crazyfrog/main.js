@@ -12,6 +12,7 @@ var isGameOver = false;
 var showDebugInfos = false;
 
 var currentLevel = 1;
+var lifes = 3;
 var laneSize = 65;
 var laneOffset = 120;
 
@@ -63,7 +64,12 @@ var main_state = {
         introText.visible = false;
 
         var currentLevelText = 'Level: ' + currentLevel;
-        levelText = game.add.text(game.world.width/4*3, 20, currentLevelText, { font: "18px Arial", fill: "#ffffff", align: "center" });
+        levelText = game.add.text(game.world.width/5*3, 20, currentLevelText, { font: "18px Arial", fill: "#ffffff", align: "center" });
+        levelText.anchor.setTo(0.5, 0.5);
+        levelText.visible = true;
+
+        var lifeLevelText = 'Lifes: ' + lifes;
+        levelText = game.add.text(game.world.width/5*4, 20, lifeLevelText, { font: "18px Arial", fill: "#ffffff", align: "center" });
         levelText.anchor.setTo(0.5, 0.5);
         levelText.visible = true;
     },
@@ -130,8 +136,13 @@ function frogOut(lfrog) {
 }
 
 function frogIsDead(frog, car) {
-    introText.text = 'Game Over!';
-    introText.visible = true;
+    lifes = lifes - 1;
+    if (lifes < 1) {
+        introText.text = 'Game Over!';
+        introText.visible = true;
+        lifes = 3;
+        currentLevel = 1;
+    }
     isGameOver = true;
     deadFrog.x=frog.x;
     deadFrog.y=frog.y;
