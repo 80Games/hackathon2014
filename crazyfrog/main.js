@@ -6,6 +6,7 @@ var deadFrog;
 var cars;
 var fly;
 var introText;
+var levelText;
 var isGameOver = false;
 
 var showDebugInfos = false;
@@ -60,6 +61,11 @@ var main_state = {
         introText = game.add.text(game.world.centerX, 400, '- click to start -', { font: "40px Arial", fill: "#ffffff", align: "center" });
         introText.anchor.setTo(0.5, 0.5);
         introText.visible = false;
+
+        var currentLevelText = 'Level: ' + currentLevel;
+        levelText = game.add.text(game.world.width/4*3, 20, currentLevelText, { font: "18px Arial", fill: "#ffffff", align: "center" });
+        levelText.anchor.setTo(0.5, 0.5);
+        levelText.visible = true;
     },
 
     update: function () {
@@ -135,12 +141,14 @@ function frogIsDead(frog, car) {
 }
 
 function flyEaten(frog, fly) {
-    introText.text = 'You win! Next Level=' + (currentLevel + 1);
+    introText.text = 'Next Level!';
     introText.visible = true;
     isGameOver = true;
     resetFrog(frog);
     currentLevel++;
     updateCars();
+    var currentLevelText = 'Level: ' + currentLevel;
+    levelText.text = currentLevelText;
 }
 
 function updateCars() {
