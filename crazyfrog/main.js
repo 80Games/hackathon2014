@@ -7,7 +7,11 @@ var fly;
 var introText;
 var isGameOver = false;
 
-var showDebugInfos=false;
+var showDebugInfos = false;
+
+var currentLevel = 6;
+var laneSize = 60;
+var laneOffset = 50;
 
 // And now we define our first and only state, I'll call it 'main'. A state is a specific scene of a game like a menu, a game over screen, etc.
 var main_state = {
@@ -32,7 +36,7 @@ var main_state = {
         game.physics.enable(frog, Phaser.Physics.ARCADE);
         frog.body.checkCollision.any = true;
         frog.body.collideWorldBounds = true;
-        frog.body.setSize(37,37);
+        frog.body.setSize(37, 37);
         frog.events.onOutOfBounds.add(frogOut, this);
 
         fly = game.add.sprite(frogXPosition, 0, 'fly');
@@ -42,18 +46,7 @@ var main_state = {
         cars.enableBody = true;
         cars.physicsBodyType = Phaser.Physics.ARCADE;
 
-        for (var i = 0; i < 4; i++) {
-            var car_sprite = cars.create(0, 50 + i * 100, 'car');
-            car_sprite.body.velocity.x = 50 + Math.random() * 200;
-            car_sprite.checkWorldBounds = true;
-            car_sprite.enableBody = true;
-            car_sprite.physicsBodyType = Phaser.Physics.ARCADE;
-            car_sprite.events.onOutOfBounds.add(carOut, this);
-            game.physics.enable(car_sprite, Phaser.Physics.ARCADE);
-            car_sprite.body.checkCollision.any = true;
-            car_sprite.body.immovable = true;
-            car_sprite.body.setSize(76,36,0,7);
-        }
+        updateCars();
 
         introText = game.add.text(game.world.centerX, 400, '- click to start -', { font: "40px Arial", fill: "#ffffff", align: "center" });
         introText.anchor.setTo(0.5, 0.5);
@@ -62,6 +55,7 @@ var main_state = {
 
     update: function () {
 
+        game.physics.arcade.collide(cars);
         game.physics.arcade.overlap(frog, cars, deadFrog, null, this);
         game.physics.arcade.overlap(frog, fly, flyEaten, null, this);
 
@@ -110,11 +104,14 @@ function carOut(car) {
     car.reset(-60, y);
     car.body.velocity.x = 50 + Math.random() * 200;
 }
-function frogOut(lfrog) {
+function resetFrog(lfrog) {
     lfrog.body.velocity.setTo(0, 0);
     lfrog.x = game.width / 2;
     lfrog.y = 500;
     lfrog.angle = 0;
+}
+function frogOut(lfrog) {
+    resetFrog(lfrog);
     isGameOver = true;
 }
 
@@ -126,10 +123,42 @@ function deadFrog(frog, car) {
 }
 
 function flyEaten(frog, fly) {
-    introText.text = 'You win!';
+    introText.text = 'You win! Next Level=' + (currentLevel + 1);
     introText.visible = true;
     isGameOver = true;
+    resetFrog(frog);
+    currentLevel++;
+    updateCars();
+}
 
+function updateCars() {
+    cars.callAll('kill');
+    cars.callAll('remove');
+    var lanes = currentLevel;
+    var maxCars = currentLevel;
+    var numberOfCars = 0;
+    if (lanes > 5) {
+        lanes = 5;
+    }
+
+    do {
+        for (var i = 0; i < lanes; i++) {
+            if (maxCars > numberOfCars) {
+                numberOfCars++;
+                var velocity = 50 + Math.random() * 200;
+                var car_sprite = cars.create(Math.random() * 300, laneOffset + i * laneSize, 'car');
+                car_sprite.body.velocity.x = velocity;
+                car_sprite.checkWorldBounds = true;
+                car_sprite.enableBody = true;
+                car_sprite.physicsBodyType = Phaser.Physics.ARCADE;
+                car_sprite.events.onOutOfBounds.add(carOut, this);
+                game.physics.enable(car_sprite, Phaser.Physics.ARCADE);
+                car_sprite.body.checkCollision.any = true;
+                //car_sprite.body.immovable = true;
+                car_sprite.body.setSize(76, 36, 0, 7);
+            }
+        }
+    } while (numberOfCars<maxCars);
 }
 
 // And finally we tell Phaser to add and start our 'main' state
