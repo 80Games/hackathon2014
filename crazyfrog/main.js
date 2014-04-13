@@ -156,11 +156,16 @@ function frogIsDead(frog, car) {
         introText.visible = true;
         lifes = 3;
         currentLevel = 1;
+        updateCars();
+        updateLevelText();
     }
     lifesText.text = 'Lives: '+lifes;
     isGameOver = true;
 }
 
+function updateLevelText() {
+    levelText.text = 'Level: ' + currentLevel;
+}
 function flyEaten(frog, fly) {
     introText.text = 'Next Level!';
     introText.visible = true;
@@ -168,8 +173,7 @@ function flyEaten(frog, fly) {
     resetFrog(frog);
     currentLevel++;
     updateCars();
-    var currentLevelText = 'Level: ' + currentLevel;
-    levelText.text = currentLevelText;
+    updateLevelText();
 }
 
 function updateCars() {
