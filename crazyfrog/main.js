@@ -28,6 +28,7 @@ var main_state = {
         game.physics.enable(frog, Phaser.Physics.ARCADE);
         frog.body.checkCollision.any = true;
         frog.body.collideWorldBounds = true;
+        frog.body.setSize(40,40);
         frog.events.onOutOfBounds.add(frogOut, this);
 
         cars = game.add.group();
