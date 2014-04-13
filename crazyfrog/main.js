@@ -93,6 +93,10 @@ var main_state = {
                 frog.x += 5;
                 frog.angle = 90;
             }
+            if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
+                frog.y += 1;
+                frog.angle = 180;
+            }
         } else {
             if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
                 isGameOver = false;
