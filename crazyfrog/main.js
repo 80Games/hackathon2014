@@ -3,6 +3,7 @@
 var game = new Phaser.Game(500, 600, Phaser.AUTO, 'game_div');
 var frog;
 var cars;
+var fly;
 var introText;
 var isGameOver = false;
 
@@ -14,6 +15,7 @@ var main_state = {
         // Parameters: name of the sprite, path to the image
         game.load.image('car', 'assets/Car.png');
         game.load.image('frog', 'assets/frog2.png');
+        game.load.image('fly', 'assets/fly.png');
     },
 
     create: function () {
@@ -28,8 +30,11 @@ var main_state = {
         game.physics.enable(frog, Phaser.Physics.ARCADE);
         frog.body.checkCollision.any = true;
         frog.body.collideWorldBounds = true;
-        frog.body.setSize(30,30);
+        frog.body.setSize(37,37);
         frog.events.onOutOfBounds.add(frogOut, this);
+
+        fly = game.add.sprite(frogXPosition, 0, 'fly');
+        game.physics.enable(fly, Phaser.Physics.ARCADE);
 
         cars = game.add.group();
         cars.enableBody = true;
@@ -45,6 +50,7 @@ var main_state = {
             game.physics.enable(car_sprite, Phaser.Physics.ARCADE);
             car_sprite.body.checkCollision.any = true;
             car_sprite.body.immovable = true;
+            car_sprite.body.setSize(76,36,0,7);
         }
 
         introText = game.add.text(game.world.centerX, 400, '- click to start -', { font: "40px Arial", fill: "#ffffff", align: "center" });
@@ -55,6 +61,7 @@ var main_state = {
     update: function () {
 
         game.physics.arcade.overlap(frog, cars, deadFrog, null, this);
+        game.physics.arcade.overlap(frog, fly, flyEaten, null, this);
 
         if (!isGameOver) {
             if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
@@ -114,6 +121,12 @@ function deadFrog(frog, car) {
 
 }
 
+function flyEaten(frog, fly) {
+    introText.text = 'You win!';
+    introText.visible = true;
+    isGameOver = true;
+
+}
 
 // And finally we tell Phaser to add and start our 'main' state
 game.state.add('main', main_state);
