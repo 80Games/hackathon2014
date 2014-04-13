@@ -3,6 +3,7 @@
 var game = new Phaser.Game(500, 600, Phaser.AUTO, 'game_div');
 var frog;
 var cars;
+var introText;
 
 // And now we define our first and only state, I'll call it 'main'. A state is a specific scene of a game like a menu, a game over screen, etc.
 var main_state = {
@@ -14,14 +15,17 @@ var main_state = {
         game.load.image('frog', 'assets/frog2.png');  
     },
 
-    create: function() { 
-        game.physics.setBoundsToWorld();
+    create: function() {
+        game.physics.startSystem(Phaser.Physics.ARCADE);
+        //game.physics.setBoundsToWorld();
 
         var frogYPosition = 500;
         var frogXPosition = game.width / 2;
         frog = game.add.sprite(frogXPosition, frogYPosition, 'frog');
         frog.anchor.setTo(0.5, 0.5);
-    
+        game.physics.enable(frog, Phaser.Physics.ARCADE);
+
+
         cars = game.add.group();
         cars.enableBody = true;
         cars.physicsBodyType = Phaser.Physics.ARCADE;
@@ -33,12 +37,18 @@ var main_state = {
             car_sprite.enableBody = true;
             car_sprite.physicsBodyType = Phaser.Physics.ARCADE;
             car_sprite.events.onOutOfBounds.add(carOut, this);
+            game.physics.enable(car_sprite, Phaser.Physics.ARCADE);
         }
+
+        introText = game.add.text(game.world.centerX, 400, '- click to start -', { font: "40px Arial", fill: "#ffffff", align: "center" });
+        introText.anchor.setTo(0.5, 0.5);
+        introText.visible = false;
     },
 
     update: function() {
 
         game.physics.arcade.collide(frog, cars, deadFrog, null, this);
+
         if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
             frog.y -= 5;
             frog.angle = 0;
@@ -51,7 +61,7 @@ var main_state = {
             frog.x += 5;
             frog.angle = 90;
         }
-	},
+	}
 }
 
 function carOut(car) {
@@ -62,7 +72,9 @@ function carOut(car) {
 }
 
 function deadFrog(frog, car) {
-    
+    introText.text = 'Game Over!';
+    introText.visible = true;
+
 }
 
 
