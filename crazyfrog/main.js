@@ -1,6 +1,8 @@
 // We start by initializing Phaser
 // Parameters: width of the game, height of the game, how to render the game, the HTML div that will contain the game
 var game = new Phaser.Game(500, 600, Phaser.AUTO, 'game_div');
+var frog;
+var cars;
 
 // And now we define our first and only state, I'll call it 'main'. A state is a specific scene of a game like a menu, a game over screen, etc.
 var main_state = {
@@ -14,6 +16,11 @@ var main_state = {
 
     create: function() { 
         game.physics.setBoundsToWorld();
+
+        var frogYPosition = 500;
+        var frogXPosition = game.width / 2;
+        frog = game.add.sprite(frogXPosition, frogYPosition, 'frog');
+        frog.anchor.setTo(0.5, 0.5);
     
         cars = game.add.group();
         cars.enableBody = true;
@@ -27,14 +34,23 @@ var main_state = {
             car_sprite.physicsBodyType = Phaser.Physics.ARCADE;
             car_sprite.events.onOutOfBounds.add(carOut, this);
         }
-
-        var frogYPosition = 500;
-        var frogXPosition = game.world.centerX;
-        var frog = game.add.sprite(frogXPosition, frogYPosition, 'frog');
-
     },
 
     update: function() {
+
+        game.physics.arcade.collide(frog, cars, deadFrog, null, this);
+        if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+            frog.y -= 5;
+            frog.angle = 0;
+        }
+        if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
+            frog.x -= 5;
+            frog.angle = 270;
+        }
+        if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
+            frog.x += 5;
+            frog.angle = 90;
+        }
 	},
 }
 
@@ -43,6 +59,10 @@ function carOut(car) {
     var y = car.position.y;
     car.reset(-60, y);
     car.body.velocity.x = 50 + Math.random() * 200;
+}
+
+function deadFrog(frog, car) {
+    
 }
 
 
