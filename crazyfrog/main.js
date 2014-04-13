@@ -7,6 +7,8 @@ var fly;
 var introText;
 var isGameOver = false;
 
+var showDebugInfos=false;
+
 // And now we define our first and only state, I'll call it 'main'. A state is a specific scene of a game like a menu, a game over screen, etc.
 var main_state = {
 
@@ -90,12 +92,14 @@ var main_state = {
     },
 
     render: function () {
-        game.debug.body(frog);
-        game.debug.spriteInfo(frog);
-        var carsSize=cars.length;
-        for (var i=0;i<carsSize;i++) {
-            var c = cars.getAt(i);
-            game.debug.body(c);
+        if (showDebugInfos) {
+            game.debug.body(frog);
+            game.debug.spriteInfo(frog);
+            var carsSize = cars.length;
+            for (var i = 0; i < carsSize; i++) {
+                var c = cars.getAt(i);
+                game.debug.body(c);
+            }
         }
     }
 }
