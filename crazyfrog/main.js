@@ -2,6 +2,7 @@
 // Parameters: width of the game, height of the game, how to render the game, the HTML div that will contain the game
 var game = new Phaser.Game(500, 600, Phaser.AUTO, 'game_div');
 var frog;
+var deadFrog;
 var cars;
 var fly;
 var introText;
@@ -9,9 +10,9 @@ var isGameOver = false;
 
 var showDebugInfos = false;
 
-var currentLevel = 6;
-var laneSize = 60;
-var laneOffset = 50;
+var currentLevel = 1;
+var laneSize = 65;
+var laneOffset = 120;
 
 // And now we define our first and only state, I'll call it 'main'. A state is a specific scene of a game like a menu, a game over screen, etc.
 var main_state = {
@@ -19,14 +20,18 @@ var main_state = {
     preload: function () {
         // Load a sprite in the game
         // Parameters: name of the sprite, path to the image
-        game.load.image('car', 'assets/Car.png');
-        game.load.image('frog', 'assets/frog2.png');
+        game.load.image('car', 'assets/shadowcar.png');
+        game.load.image('frog', 'assets/frog3.png');
+        game.load.image('deadfrog', 'assets/deadfrog.png');
         game.load.image('fly', 'assets/fly.png');
+        game.load.image('streets', 'assets/streets.png');
     },
 
     create: function () {
         game.physics.startSystem(Phaser.Physics.ARCADE);
         //game.physics.setBoundsToWorld();
+
+        s = game.add.tileSprite(0, 0, 500, 600, 'streets');
 
         var frogYPosition = 500;
         var frogXPosition = game.width / 2;
@@ -38,6 +43,10 @@ var main_state = {
         frog.body.collideWorldBounds = true;
         frog.body.setSize(37, 37);
         frog.events.onOutOfBounds.add(frogOut, this);
+
+        deadFrog = game.add.sprite(0, 0, 'deadfrog');
+        deadFrog.anchor.setTo(0.5, 0.5);
+        deadFrog.visible = false;
 
         fly = game.add.sprite(frogXPosition, 0, 'fly');
         game.physics.enable(fly, Phaser.Physics.ARCADE);
@@ -56,7 +65,7 @@ var main_state = {
     update: function () {
 
         game.physics.arcade.collide(cars);
-        game.physics.arcade.overlap(frog, cars, deadFrog, null, this);
+        game.physics.arcade.overlap(frog, cars, frogIsDead, null, this);
         game.physics.arcade.overlap(frog, fly, flyEaten, null, this);
 
         if (!isGameOver) {
@@ -77,10 +86,7 @@ var main_state = {
                 isGameOver = false;
                 introText.visible = false;
 
-                frog.x = game.width / 2;
-                frog.y = 500;
-                frog.angle = 0;
-                frog.body.velocity.setTo(0, 0);
+                resetFrog(frog);
             }
         }
     },
@@ -109,17 +115,23 @@ function resetFrog(lfrog) {
     lfrog.x = game.width / 2;
     lfrog.y = 500;
     lfrog.angle = 0;
+    deadFrog.visible=false;
+    lfrog.visible=true;
 }
 function frogOut(lfrog) {
     resetFrog(lfrog);
     isGameOver = true;
 }
 
-function deadFrog(frog, car) {
+function frogIsDead(frog, car) {
     introText.text = 'Game Over!';
     introText.visible = true;
     isGameOver = true;
-
+    deadFrog.x=frog.x;
+    deadFrog.y=frog.y;
+    deadFrog.angle=frog.angle;
+    deadFrog.visible=true;
+    frog.visible=false;
 }
 
 function flyEaten(frog, fly) {
