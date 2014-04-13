@@ -28,7 +28,7 @@ var main_state = {
         game.physics.enable(frog, Phaser.Physics.ARCADE);
         frog.body.checkCollision.any=true;
         frog.body.collideWorldBounds = true;
-
+        frog.events.onOutOfBounds.add(frogOut, this);
 
         cars = game.add.group();
         cars.enableBody = true;
@@ -43,6 +43,7 @@ var main_state = {
             car_sprite.events.onOutOfBounds.add(carOut, this);
             game.physics.enable(car_sprite, Phaser.Physics.ARCADE);
             car_sprite.body.checkCollision.any=true;
+            car_sprite.body.immovable=true;
         }
 
         introText = game.add.text(game.world.centerX, 400, '- click to start -', { font: "40px Arial", fill: "#ffffff", align: "center" });
@@ -52,7 +53,7 @@ var main_state = {
 
     update: function() {
 
-        game.physics.arcade.collide(frog, cars, deadFrog, null, this);
+        game.physics.arcade.overlap(frog, cars, deadFrog, null, this);
 
         if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
             frog.y -= 5;
@@ -90,6 +91,14 @@ function carOut(car) {
     var y = car.position.y;
     car.reset(-60, y);
     car.body.velocity.x = 50 + Math.random() * 200;
+}
+
+function frogOut(lfrog) {
+    lfrog.body.velocity.setTo(0,0);
+    lfrog.x=game.width / 2;
+    lfrog.y=500;
+    lfrog.angle = 0;
+    isGameOver=true;
 }
 
 function deadFrog(frog, car) {
