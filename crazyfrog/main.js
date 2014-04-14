@@ -176,7 +176,7 @@ function updateLevelText() {
     levelText.text = 'Level: ' + currentLevel;
 }
 function flyEaten(frog, fly) {
-    introText.text = 'Next Level!';
+    introText.text = 'Next Level! Press SPACEBAR to continue';
     introText.visible = true;
     isGameOver = true;
     resetFrog(frog);
