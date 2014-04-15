@@ -1,6 +1,3 @@
-// We start by initializing Phaser
-// Parameters: width of the game, height of the game, how to render the game, the HTML div that will contain the game
-var game = new Phaser.Game(1200, 600, Phaser.AUTO, 'game_div');
 var frog;
 var deadFrog;
 var cars;
@@ -21,17 +18,6 @@ var irrerIvanQuote=0.001;
 
 // And now we define our first and only state, I'll call it 'main'. A state is a specific scene of a game like a menu, a game over screen, etc.
 var main_state = {
-
-    preload: function () {
-        // Load a sprite in the game
-        // Parameters: name of the sprite, path to the image
-        game.load.image('car', 'assets/shadowcar.png');
-        game.load.image('frog', 'assets/frog3.png');
-        game.load.image('deadfrog', 'assets/deadfrog.png');
-        game.load.image('fly', 'assets/fly.png');
-        game.load.image('streets', 'assets/widestreets.png');
-    },
-
     create: function () {
         game.physics.startSystem(Phaser.Physics.ARCADE);
         //game.physics.setBoundsToWorld();
@@ -75,6 +61,9 @@ var main_state = {
         lifesText = game.add.text(game.world.width/5*4, 20, lifeLevelText, { font: "18px Arial", fill: "#ffffff", align: "center" });
         lifesText.anchor.setTo(0.5, 0.5);
         lifesText.visible = true;
+
+         // No 'this.score', but just 'score'
+        score = 0; 
     },
 
     update: function () {
@@ -134,7 +123,7 @@ function carOut(car) {
     //  Move the alien to the top of the screen again
     var y = car.position.y;
     car.reset(-60, y);
-    car.body.velocity.x = 50 + Math.random() * 200;
+    car.body.velocity.x = 50 + Math.random() * 600;
 }
 function resetFrog(lfrog) {
     lfrog.body.velocity.setTo(0, 0);
@@ -167,6 +156,7 @@ function frogIsDead(frog, car) {
         currentLevel = 1;
         updateCars();
         updateLevelText();
+        this.game.state.start('menu');
     }
     lifesText.text = 'Lives: '+lifes;
     isGameOver = true;
@@ -183,6 +173,10 @@ function flyEaten(frog, fly) {
     currentLevel++;
     updateCars();
     updateLevelText();
+    score = score + 1;
+    if (score > localStorage.getItem("highscore")) {
+        localStorage.setItem("highscore", score);
+    }
 }
 
 function updateCars() {
